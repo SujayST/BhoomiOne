@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @page  {
+        margin: 0;
+        size: 4in 6in; /*or width then height 150mm 50mm*/
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px; /* Slightly smaller font size for body text */
+            margin: 0;
+            box-sizing: border-box;
+            border: 1px solid black;
+            width: 2.7in;
+            height: 4in;
+            padding: 0.05in; /* Reduced padding */
+
+            
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px; /* Smaller font size for table text */
+        }
+        th, td {
+            padding: 2px; /* Smaller padding for table cells */
+            border: 1px solid black;
+            vertical-align: top;
+        }
+        th {
+            text-align: center;
+        }
+        .barcode {
+            text-align: center;
+            font-family: 'Libre Barcode 128 Text', cursive;
+            font-size: 40px; /* Slightly reduced barcode font size */
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .no-border td {
+            border: none;
+        }
+        .center {
+            text-align: center;
+        }
+        .terms {
+            font-size: 7px; /* Smaller font size for terms */
+            margin-top: 2px;
+            line-height: 1.2em;
+        }
+        .sku-col {
+            width: 20%; /* Adjusted width for SKU column */
+        }
+        .item-col {
+            width: 60%; /* Adjusted width for ITEM column */
+        }
+        .qty-col {
+            width: 20%; /* Adjusted width for QTY column */
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128+Text&display=swap" rel="stylesheet">
+    <title>Shipping Label</title>
+</head>
+<body class="center">
+
+    <div >
+        <h4 style="margin: 0; margin-bottom: 5px" class="center">Shipping Label</h4>
+        <table>
+            <tr>
+                <td colspan="2" style="font-size: smaller;">
+                    <strong>DELIVER TO:</strong> <br>
+                    <%= shipping_name %><br>
+                    <%= shipping_address %><br>
+                    <%= shipping_city %>, <%= shipping_pincode %><br>
+                    <%= shipping_state %><br>
+                </td>
+                <td colspan="2" style="font-size: smaller;">
+                    <strong>Shipped By (if undelivered, return to):</strong><br>
+                    <%= company_name %><br>
+                    <%= company_address %><br>
+                    <%= company_state %>, <%= company_pincode %><br>
+                </td>
+            </tr>
+        
+            <tr class="no-border">
+                <td colspan="4" class="barcode">
+                    <img src="<%= barcodeImage %>" alt="Barcode" width="150" height="40">
+                </td>
+            </tr>
+            <tr class="center">
+                <td colspan="2"><strong>ORDER #:</strong> <%= order_number %></td>
+                <td colspan="2"><strong>AWB #:</strong> <%= shippingDetails.waybill %></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="center bold">PREPAID</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <th class="item-col">ITEM</th>
+                <th class="qty-col">QTY</th>
+            </tr>
+            <% invoice_items.forEach(item => { %>
+            <tr>
+                <td class="item-col"><%= item.description %></td>
+                <td class="qty-col"><%= item.quantity %></td>
+            </tr>
+            <% }); %>
+        </table>
+
+        <p class="terms">
+            <strong>TERMS AND CONDITIONS:</strong> <br>
+            Shipment liable to inspection. Subject to Delhivery's terms of Carriage. <br>
+            This is an auto-generated label and does not need a signature.
+        </p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "BhoomiOne",
+    "slug": "bhoomione-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#15803D"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bhoomione.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#15803D"
+      },
+      "package": "com.bhoomione.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
+
