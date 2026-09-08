@@ -79,6 +79,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
 
       {categories.map((cat) => {
         const isSelected = selectedCategoryId === cat._id;
+        const catImg = cat.url || (cat.urls && cat.urls.length > 0 ? cat.urls[0] : null);
         return (
           <TouchableOpacity
             key={cat._id}
@@ -92,9 +93,9 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
                 isSelected ? styles.selectedIconBox : null,
               ]}
             >
-              {cat.url ? (
+              {catImg ? (
                 <Image
-                  source={{ uri: cat.url }}
+                  source={{ uri: catImg }}
                   style={styles.catImage}
                   resizeMode="cover"
                 />

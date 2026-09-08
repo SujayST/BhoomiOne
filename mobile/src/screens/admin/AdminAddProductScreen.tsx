@@ -13,6 +13,7 @@ import {
 import { Header } from '../../components/common/Header';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
+import { MultiImagePicker } from '../../components/common/MultiImagePicker';
 import { colors, borderRadius } from '../../theme/colors';
 import { categoryService } from '../../services/categoryService';
 import { storeService } from '../../services/storeService';
@@ -52,6 +53,7 @@ export const AdminAddProductScreen = ({ route, navigation }: any) => {
   const [pOffer, setPOffer] = useState('0');
   const [pQuantity, setPQuantity] = useState('100');
   const [pStatus, setPStatus] = useState('Active');
+  const [images, setImages] = useState<string[]>([]);
 
   // Input & suggestion state
   const [categoryInput, setCategoryInput] = useState('Hybrid Seeds');
@@ -143,20 +145,22 @@ export const AdminAddProductScreen = ({ route, navigation }: any) => {
       formData.append('pQuantity', sizesArray);
       formData.append('similarProducts', '[]');
 
-      // Attach 2 standard transparent sample image blobs
-      const sampleBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-      
-      formData.append('images', {
-        uri: `data:image/png;base64,${sampleBase64}`,
-        name: 'product_1.png',
-        type: 'image/png',
-      } as any);
+      if (images.length === 0) {
+        setError('Product images are mandatory. Please add at least 1 image.');
+        setSubmitting(false);
+        return;
+      }
 
-      formData.append('images', {
-        uri: `data:image/png;base64,${sampleBase64}`,
-        name: 'product_2.png',
-        type: 'image/png',
-      } as any);
+      // Append all selected product images
+      images.forEach((imgUri, index) => {
+        const fileExt = imgUri.split('.').pop() || 'jpg';
+        const fileName = `product_${pName.toLowerCase().replace(/\s+/g, '_')}_${index}_${Date.now()}.${fileExt}`;
+        formData.append('images', {
+          uri: imgUri,
+          name: fileName,
+          type: `image/${fileExt === 'png' ? 'png' : 'jpeg'}`,
+        } as any);
+      });
 
       const res = await adminService.addProduct(formData);
 
@@ -240,6 +244,20 @@ export const AdminAddProductScreen = ({ route, navigation }: any) => {
               multiline
               numberOfLines={4}
               style={{ minHeight: 80 }}
+            />
+          </View>
+
+          {/* Mandatory Multiple Product Images Upload Card */}
+          <View style={styles.formCard}>
+            <MultiImagePicker
+              images={images}
+              onImagesChange={(imgs) => {
+                setImages(imgs);
+                if (imgs.length > 0) setError('');
+              }}
+              maxImages={8}
+              label="Product Photos"
+              mandatory={true}
             />
           </View>
 

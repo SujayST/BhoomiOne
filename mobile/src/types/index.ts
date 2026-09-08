@@ -26,7 +26,9 @@ export interface Category {
   cName: string;
   cDescription?: string;
   cImage?: string;
+  cImages?: string[];
   url?: string;
+  urls?: string[];
   cStatus?: string;
   cSection?: {
     _id: string;
@@ -50,8 +52,10 @@ export interface Store {
   sName: string;
   sDescription?: string;
   sImage?: string;
+  sImages?: string[];
   sLogo?: string;
   url?: string;
+  urls?: string[];
   sStatus?: string;
   sAddress?: string;
   sPincode?: number;

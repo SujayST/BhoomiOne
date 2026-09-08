@@ -130,29 +130,32 @@ export const CategoriesScreen = ({ navigation }: any) => {
                     : 'All Farming Categories'}
                 </Text>
               }
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    navigation.navigate('ProductList', {
-                      categoryId: item._id,
-                      categoryName: item.cName,
-                    })
-                  }
-                  style={styles.categoryCard}
-                >
-                  <View style={styles.catImageWrapper}>
-                    {item.url ? (
-                      <Image source={{ uri: item.url }} style={styles.catImage} />
-                    ) : (
-                      <Sprout size={32} color={colors.primary} />
-                    )}
-                  </View>
-                  <Text style={styles.catTitle} numberOfLines={2}>
-                    {item.cName}
-                  </Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const catImg = item.url || (item.urls && item.urls.length > 0 ? item.urls[0] : null);
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() =>
+                      navigation.navigate('ProductList', {
+                        categoryId: item._id,
+                        categoryName: item.cName,
+                      })
+                    }
+                    style={styles.categoryCard}
+                  >
+                    <View style={styles.catImageWrapper}>
+                      {catImg ? (
+                        <Image source={{ uri: catImg }} style={styles.catImage} />
+                      ) : (
+                        <Sprout size={32} color={colors.primary} />
+                      )}
+                    </View>
+                    <Text style={styles.catTitle} numberOfLines={2}>
+                      {item.cName}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
         </View>

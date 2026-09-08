@@ -1,29 +1,43 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
 
 const getBackendUrl = (): string => {
-  // 1. Try to extract IP from Expo development bundler host (e.g. "192.168.1.4:8081")
+  // 1. Try to extract IP from native scriptURL (where Metro bundle was loaded from)
+  const scriptURL = NativeModules?.SourceCode?.scriptURL;
+  if (scriptURL) {
+    const match = scriptURL.match(/https?:\/\/([^:/]+)/);
+    if (match && match[1] && match[1] !== 'localhost' && match[1] !== '127.0.0.1') {
+      return `http://${match[1]}:8000/api`;
+    }
+  }
+
+  // 2. Try to extract IP from Expo development bundler host (e.g. "192.168.1.7:8081")
   const hostUri =
     Constants.expoConfig?.hostUri ||
     (Constants as any).manifest?.debuggerHost ||
-    (Constants as any).manifest2?.extra?.expoGo?.debuggerHost;
+    (Constants as any).manifest2?.extra?.expoGo?.debuggerHost ||
+    (Constants as any).experienceUrl;
 
   if (hostUri) {
-    const ip = hostUri.split(':')[0];
+    const match = String(hostUri).match(/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/);
+    if (match && match[1]) {
+      return `http://${match[1]}:8000/api`;
+    }
+    const ip = String(hostUri).split(':')[0].replace(/.*:\/\//, '');
     if (ip && ip !== 'localhost' && ip !== '127.0.0.1') {
       return `http://${ip}:8000/api`;
     }
   }
 
-  // 2. Android Emulator fallback
+  // 3. Android Emulator fallback
   if (Platform.OS === 'android') {
     return 'http://10.0.2.2:8000/api';
   }
 
-  // 3. Fallback to local network IP or localhost
-  return 'http://192.168.1.4:8000/api';
+  // 4. Fallback to current local Wi-Fi IP
+  return 'http://192.168.1.7:8000/api';
 };
 
 export const API_BASE_URL = getBackendUrl();

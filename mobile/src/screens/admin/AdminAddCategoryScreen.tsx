@@ -13,6 +13,7 @@ import {
 import { Header } from '../../components/common/Header';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
+import { MultiImagePicker } from '../../components/common/MultiImagePicker';
 import { colors, borderRadius } from '../../theme/colors';
 import { categoryService } from '../../services/categoryService';
 import { storeService } from '../../services/storeService';
@@ -41,6 +42,7 @@ export const AdminAddCategoryScreen = ({ route, navigation }: any) => {
   const [cName, setCName] = useState('');
   const [cDescription, setCDescription] = useState('');
   const [cStatus, setCStatus] = useState('Active');
+  const [images, setImages] = useState<string[]>([]);
 
   // Input & suggestion state
   const [sectionInput, setSectionInput] = useState('Seeds & Planting');
@@ -82,7 +84,12 @@ export const AdminAddCategoryScreen = ({ route, navigation }: any) => {
 
   const handleSubmit = async () => {
     if (!cName.trim() || !cDescription.trim() || !sectionInput.trim() || !storeInput.trim()) {
-      setError('Please fill in all mandatory fields');
+      setError('Please fill in all mandatory text fields');
+      return;
+    }
+
+    if (images.length === 0) {
+      setError('Category image is mandatory. Please add at least 1 image.');
       return;
     }
 
@@ -107,17 +114,21 @@ export const AdminAddCategoryScreen = ({ route, navigation }: any) => {
       );
       formData.append('cStore', matchedStr ? matchedStr._id : storeInput.trim());
 
-      const sampleBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-      formData.append('cImage', {
-        uri: `data:image/png;base64,${sampleBase64}`,
-        name: `${cName.toLowerCase().replace(/\s+/g, '_')}_cat.png`,
-        type: 'image/png',
-      } as any);
+      // Append all selected images
+      images.forEach((imgUri, index) => {
+        const fileExt = imgUri.split('.').pop() || 'jpg';
+        const fileName = `category_${cName.toLowerCase().replace(/\s+/g, '_')}_${index}_${Date.now()}.${fileExt}`;
+        formData.append('cImages', {
+          uri: imgUri,
+          name: fileName,
+          type: `image/${fileExt === 'png' ? 'png' : 'jpeg'}`,
+        } as any);
+      });
 
       const res = await adminService.addCategory(formData);
 
       if (res.success || !res.error) {
-        Alert.alert('Success', 'Category created successfully!', [
+        Alert.alert('Success', 'Category created successfully with all photos uploaded!', [
           {
             text: 'OK',
             onPress: () => {
@@ -194,6 +205,20 @@ export const AdminAddCategoryScreen = ({ route, navigation }: any) => {
               }}
               multiline
               numberOfLines={3}
+            />
+          </View>
+
+          {/* Mandatory Multiple Image Upload Card */}
+          <View style={styles.formCard}>
+            <MultiImagePicker
+              images={images}
+              onImagesChange={(imgs) => {
+                setImages(imgs);
+                if (imgs.length > 0) setError('');
+              }}
+              maxImages={6}
+              label="Category Images"
+              mandatory={true}
             />
           </View>
 

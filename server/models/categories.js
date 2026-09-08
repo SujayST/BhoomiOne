@@ -15,6 +15,10 @@ const categorySchema = new mongoose.Schema(
     cImage: {
       type: String,
     },
+    cImages: {
+      type: Array,
+      default: [],
+    },
     cStore: {
       type: ObjectId,
       ref: "stores",
@@ -25,6 +29,10 @@ const categorySchema = new mongoose.Schema(
     },
     url: {
       type: String,
+    },
+    urls: {
+      type: Array,
+      default: [],
     },
     cStatus: {
       type: String,
